@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com_comment-mapper">
+
+	<select id="list" resultType="community.Com_commentVO">
+		select rownum n, c.* 
+		from (select * from comu_comment where comu_no = #{no} and isdel = 'N' order by no) c
+		order by n desc
+	</select>
+	
+	<update id="update">
+		update comu_comment set content = #{content} where no = #{no}
+	</update>
+	
+	<update id="delete">
+		update comu_comment set isdel = 'Y' where no = #{no}
+	</update>
+
+	<insert id="insert">
+		insert into comu_comment(no, content, writer, comu_no)
+		values(cmm_comment.nextval,#{content},#{writer},#{comu_no})
+	</insert>
+</mapper>

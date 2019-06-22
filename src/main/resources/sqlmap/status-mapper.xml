@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="status-mapper">
+
+<update id="curStatusUpdate">
+	update status set door = #{door} 
+	where id = #{id}
+</update>
+
+<update id="statusBoiler">
+	update status set boiler = #{status} where id = #{id}
+</update>
+
+<update id="statusWindowAuto">
+	update status set autoWindow = (select decode(autoWindow,'N','Y','Y','N') autoWindow 
+		from status where id = #{id}) where id = #{id} 
+</update>
+
+<select id="autoWindowSetting" resultType="String">
+	select autoWindow from status where id = #{id}
+</select>
+
+<update id="doorOpen">
+	update status set door = 'Y' where id = #{id}
+</update>
+
+<update id="doorClose">
+	update status set door = 'N' where id = #{id}
+</update>
+
+<update id="gas_off">
+	update status set gas = 'N' where id = #{id}
+</update>
+
+<select id="now_boiler" resultType="String">
+	select boiler from status where id = #{id}
+</select>
+
+<update id="updateTem">
+	update status set temper = #{temper} where id = #{id}
+</update>
+
+<update id="windowOpen">
+	update status set window = 'O' where id = #{id}
+</update>
+
+<update id="windowClose">
+	update status set window = 'C' where id = #{id}
+</update>
+
+<select id="insert">
+	insert into status(id) values(#{id})
+</select>
+
+<select id="getAddrs" resultType="status.AddrVO">
+	select addr addrs, a.* from address a where id = #{id}
+</select>
+
+<select id="getAddr" resultType="status.AddrVO">
+	select addr addrs, a.* from address a where id = #{id}
+</select>
+
+<select id="info" resultType="status.GetUserVO">
+	select * from client where id = #{id} and pw = fn_encrypt( #{pw} )
+</select>
+
+<select id="sinfo" resultType="status.StatusVO">
+	select s.id, water, light, secure, temper, weather, dust, window, gas, boiler, door, autoWindow from status s, client c where s.id = c.id and s.id = #{id}
+</select>
+
+<select id="select" resultType="status.StatusVO">
+	select * from status where id = #{id}
+</select>
+
+<update id="light_on_off">
+	update status set light = (select decode(light,'N','Y','Y','N') light 
+		from status where id = #{id}) where id = #{id}
+</update>
+
+<update id="boiler_on_off">
+	update status set boiler = (select decode(boiler,'N','Y','Y','N') boiler 
+		from status where id = #{id}) where id = #{id}
+</update>
+
+</mapper>

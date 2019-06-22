@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="android-mapper">
+
+	<update id="token">
+		update client set token = #{token}
+		where id = #{id}
+	</update>
+	
+	<select id="list" resultType="android.TokenVO">
+		select id, token from client where isdel = 'N' and token is not null and is_alltoken = 'Y'
+	</select>
+	
+	<select id="getToken" resultType="String">
+		select token from client where (id = #{id} or email = #{id}) and isdel = 'N' and is_token = 'Y'
+	</select>
+	
+	<update id="tokenLogout">
+		update client set token = null where id = #{id} or email = #{id}
+	</update>
+	
+	<update id="tokenSetting">
+		update client set is_token = (select decode(is_token,'N','Y','Y','N') is_token 
+		from client where id = #{id}) where id = #{id}
+	</update>
+	
+	<update id="tokenSettingAll">
+		update client set is_alltoken = (select decode(is_alltoken,'N','Y','Y','N') is_alltoken 
+		from client where id = #{id}) where id = #{id}
+	</update>
+	
+	<select id="checkCommentPushState" resultType="String">
+		select is_token from client where id = #{id}
+	</select>
+	
+	<select id="checkALLPushState" resultType="String">
+		select is_alltoken from client where id = #{id}
+	</select>
+
+</mapper>

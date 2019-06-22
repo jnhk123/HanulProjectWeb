@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="community-mapper">
+
+	<select id="likeList" resultType="community.LikeVO">
+		select * from liketo where id = #{id}
+	</select>
+
+	<delete id="cm_cmt_delete">
+		update comu_comment set isdel = 'Y' where no = #{no}
+	</delete>
+
+	<update id="cm_cmt_update">
+		update comu_comment set content = #{content} where no = #{no}
+	</update>
+	
+	<insert id="cm_cmt_insert">
+		insert into comu_comment(no, comu_no, content, writer)
+		values(cmm_comment.nextval, #{comu_no}, #{content}, #{writer})
+	</insert>
+
+	<select id="cmmcSelect" resultType="community.Community_commentVO">
+		select rownum n, c.* 
+		from (select * from comu_comment where comu_no = #{no} and isdel = 'N' order by no) c
+		order by n desc
+	</select>
+
+	<select id="like_check" resultType="community.LikeVO">
+		select * from liketo where no = #{no} and id = #{id}
+	</select>
+
+	<insert id="like">
+		insert into liketo (no, id)
+		values(#{no}, #{id})
+	</insert>
+	
+	<delete id="like_cancel">
+		delete liketo
+		where no = #{no} and id = #{id}
+	</delete>
+
+	<update id="count">
+		update community
+		set readCnt = readCnt + 1
+		where no = #{no}
+	</update>
+	
+	<update id="delete">
+		update community
+		set isdel = 'Y'
+		where no = #{no}
+	</update>
+	
+	<select id="searchList" resultType="community.CommunityVO">
+	select n.* 
+	from (select rownum r, n.* 
+		from (select * from community where isdel = 'N' order by no) n) n
+	<include refid="search"/> and r between #{beginList} and #{endList} 
+	order by r desc
+	</select>
+	
+	<select id="likeLists" resultType="community.CommunityVO">
+		select n.* 
+		from (select rownum r, n.* 
+		from (select * from community c inner join liketo l on c.no = l.no where isdel = 'N' order by l.no) n) n
+		where r between #{beginList} and #{endList} 
+		order by r desc
+	</select>
+	
+	<select id="total" resultType="integer">
+		select count(*) from community <include refid="search"/> and isdel = 'N'
+	</select>
+	
+	<select id="likeTotal" resultType="integer">
+		select count(*) from community c, liketo l where c.no = l.no and isdel = 'N' and l.id = #{id}
+	</select>
+
+	<select id="list" resultType="community.CommunityVO">
+		select * from community where isdel = 'N' order by no desc
+	</select>
+	
+	<insert id="insert">
+		insert into community (NO,TITLE,CONTENT,WRITER,FILENAME, FILEPATH, FILEREALPATH)
+		values(seq_question.nextval,#{title},#{content},#{writer},#{fileName, jdbcType=NULL},#{filePath, jdbcType=NULL},#{fileRealPath, jdbcType=NULL})
+	</insert>
+	
+	
+	<update id="update">
+		update community
+		set title = #{title}, content = #{content}<include refid="upd"></include>
+		where no = #{no}
+	</update>
+	
+	<update id="updateFile">
+		update community
+		set title = #{title}, content = #{content}<include refid="file"></include>
+		where no = #{no}
+	</update>
+	
+	<select id="detail" resultType="community.CommunityVO">
+		select * from community where no = #{no}
+	</select>
+	
+	<sql id="upd">
+		<if test="uploadType != null and uploadType=='image'">
+			, FILEPATH = #{filePath, jdbcType=NULL}, FILENAME = #{fileName, jdbcType=NULL}
+		</if>
+	</sql>
+	<sql id="file">
+	<if test="uploadType=='image'">
+		,filename = #{fileName}, filepath = #{filePath}, fileRealPath = #{fileRealPath}
+	</if>
+	<if test="uploadType=='delete'">
+		,filename = null, filepath = null, fileRealPath = null
+	</if>
+	</sql>
+	
+	<sql id="search">
+	<if test="search=='all'">
+		where (title like '%'||#{keyword}||'%' 
+		or content  like '%'||#{keyword}||'%')
+	</if>	
+	<if test="search=='title' or search=='content'">
+		where ${search} like '%'||#{keyword}||'%'
+	</if>
+	</sql>
+
+</mapper>

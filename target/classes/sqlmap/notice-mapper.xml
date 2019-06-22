@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice-mapper">
+	
+	<select id="total" resultType="integer">
+		select count(*) from notice <include refid="search"/> and isdel = 'N'
+	</select>
+	
+	<select id="list" resultType="notice.NoticeVO">
+		select * from notice where isdel = 'N' order by writedate desc
+	</select>
+	
+	<select id="searchList" resultType="notice.NoticeVO">
+	select n.* 
+	from (select rownum r, n.* 
+		from (select * from notice  
+			<include refid="search"/> and isdel = 'N' order by writedate) n) n
+	where r between #{beginList} and #{endList} 
+	order by r desc
+	</select>
+	
+	<select id="detail" resultType="notice.NoticeVO">
+		select * from notice where no = #{no}
+	</select>
+	
+	<insert id="insert">
+		insert into notice(no,title,content,writeDate,readCnt,filename,filepath,filerealpath) 
+      values(seq_notice.nextval,#{title},#{content},sysdate,0,#{fileName, jdbcType=NULL},#{filePath, jdbcType=NULL},#{fileRealPath, jdbcType=NULL})
+	</insert>
+	
+	<update id="update">
+		update notice 
+		set title = #{title}, content = #{content} <include refid="file"></include>
+		where no = #{no}
+	</update>
+	
+	<update id="count">
+		update notice
+		set readCnt = readCnt + 1
+		where no = #{no}
+	</update>
+	
+	<update id="delete">
+		update notice
+		set isdel = 'Y'
+		where no = #{no}
+	</update>
+	
+	<sql id="search">
+	<if test="search=='all'">
+		where (title like '%'||#{keyword}||'%' 
+		or content  like '%'||#{keyword}||'%')
+	</if>	
+	<if test="search=='title' or search=='content'">
+		where ${search} like '%'||#{keyword}||'%'
+	</if>
+	</sql>
+	
+	<sql id="file">
+	<if test="uploadType=='image'">
+		,filename = #{fileName}, filepath = #{filePath}, fileRealPath = #{fileRealPath}
+	</if>
+	<if test="uploadType=='delete'">
+		,filename = null, filepath = null, fileRealPath = null
+	</if>
+	</sql>
+</mapper>

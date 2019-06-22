@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="question-mapper">
+
+	<select id="list" resultType="qa.QaVO">
+		select * from complain where isdel = 'N' order by no desc
+	</select>
+	
+	<select id="searchList" resultType="qa.QaVO">
+		select n.*
+		from (select rownum r, n.* from (select * from complain
+			<include refid="search"/> and isdel = 'N' order by no) n) n
+		where r between #{beginList} and #{endList}
+		order by r desc
+	</select>
+	
+	<select id="total" resultType="integer">
+		select count(*) from complain <include refid="search"/> and isdel = 'N'
+	</select>
+	
+	<select id="detail" resultType="qa.QaVO">
+		select * from complain where no = #{no}	
+	</select>
+	
+	<insert id="insert">
+		insert into complain(NO,TITLE,CONTENT,WRITERID,FILEPATH,FILENAME,FileRealPath)
+		values(seq_question.nextval,#{title},#{content},#{writerID},#{filePath, jdbcType=NULL},#{fileName, jdbcType=NULL},#{fileRealPath, jdbcType=NULL})
+	</insert>
+	
+	<update id="update">
+		update complain 
+		set title = #{title}, content = #{content}
+		<include refid="upd"/>
+		where no = #{no}
+	</update>
+	
+	<update id="updateFile">
+		update complain
+		set title = #{title}, content = #{content} <include refid="file"></include>
+		where no = #{no}
+	</update>
+	
+	<update id="delete">
+		update complain
+		set isdel = 'Y'
+		where no = #{no}
+	</update>
+	
+	<sql id="search">
+		<if test="search=='all'">
+			where (title like '%'||#{keyword}||'%'
+				or content like '%'||#{keyword}||'%')
+		</if>
+		<if test="search=='title' or search=='content'">
+			where ${search} like '%'||#{keyword}||'%'
+		</if>
+	</sql>
+	
+	<sql id="upd">
+		<if test="uploadType != null and uploadType=='image'">
+			, FILEPATH = #{filePath, jdbcType=NULL}, FILENAME = #{fileName, jdbcType=NULL}, FILEREALPATH = #{fileRealPath, jdbcType=NULL}
+		</if>
+	</sql>
+	
+	<sql id="file">
+	<if test="uploadType=='image'">
+		,filename = #{fileName}, filepath = #{filePath}, fileRealPath = #{fileRealPath}
+	</if>
+	<if test="uploadType=='delete'">
+		,filename = null, filepath = null, fileRealPath = null
+	</if>
+	</sql>
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="client-mapper">
+
+	<select id="findId" parameterType="String" resultType="String">
+		select id from client where name = #{name} and email = #{email}
+	</select>
+	
+	<select id="findPw" parameterType="String" resultType="String">
+		select fn_decrypt(pw) pw from client where name = #{name} and email = #{email} and id = #{id}
+	</select>
+
+	<select id="snsloginRequest" resultType="client.ClientVO">
+		select id, fn_decrypt(pw) pw, name, addr, phone, email, profile, admin, profileName 
+		from client where id = #{id}
+	</select>
+
+	<select id="id_check" resultType="Integer">
+		select count(*) from client	where id = #{id}
+	</select>
+	
+	<update id="update_addr">
+		update client set addr = #{addr} where id = #{id}
+	</update>
+	
+	<select id="insert_addr">
+		insert into address (id, addr, nx, ny)
+		values (#{id}, #{addrs}, #{nx}, #{ny})
+	</select>
+	
+	<select id="insert">
+		insert into client (name, id, pw, email, addr)
+		values (#{name}, #{id}, fn_encrypt(#{pw}), #{email}, #{addrs, jdbcType=NULL})
+	</select>
+
+	<select id="detail" resultType="client.ClientVO">
+		select id, fn_decrypt(pw) pw, name, addr, phone, email, profile, admin from client where id=#{id}
+	</select>
+
+	<select id="list" resultType="client.ClientVO">
+		select rownum no, c.* from (select * from client where isdel = 'N' order by name) c order by no
+	</select>
+
+	<update id="update">
+		update client set phone=#{phone} where id=#{id}
+	</update>
+
+	<update id="delete">
+		update client set isdel = 'Y' where id=#{id}
+	</update>
+	
+	<select id="loginRequest" resultType="client.ClientVO">
+		select id,fn_decrypt(pw) pw, name, addr, phone, email, profile, admin, profileName 
+		from client <include refid="Find_id"></include>
+	</select>
+	
+	<select id="ID_PW_check" resultType="client.ClientVO">
+		select id,fn_decrypt(pw) pw, name, addr, phone, email, profile, admin 
+		from client where id = #{id} and pw = fn_encrypt(#{pw}) and isdel = 'N'
+	</select>
+	
+	<select id="ID_check_android" resultType="client.ClientVO">
+		select id,fn_decrypt(pw) pw, name, addr, phone, email, profile, admin 
+		from client where id=#{id} and isdel= 'N'
+	</select>
+	
+	<select id="Find_ID" resultType="client.ClientVO">
+		select * from client where name=#{name} and email=#{email} and isdel = 'N'
+	</select>
+	
+	<select id="Find_PW" resultType="client.ClientVO">
+	select * from client where id=#{id} and name=#{name} and email=#{email} and isdel = 'N'
+	</select>
+	<!-- <select id="Asns_check" resultType="client.ClentVO">
+		select is_sns from client where id=#{id} and isdel='N'
+	</select> -->
+	<update id="androidUpdate">
+		update client 
+		set name = #{name}, pw = fn_encrypt(#{pw})
+		<include refid="upd"></include>
+		where id = #{id}
+	</update>
+	
+	<sql id="upd">
+		<if test="uploadType != null and uploadType=='image'">
+			,profile = #{profile, jdbcType=NULL},profileName = #{profileName, jdbcType=NULL}
+		</if>
+	</sql>
+	
+	<sql id="Find_id">
+		<if test="id != null and pw != null">
+			where id = #{id} and isdel = 'N'
+		</if>
+		<if test="name != null and email != null">
+			where name = #{name} and isdel = 'N'
+		</if>
+	</sql>
+</mapper>

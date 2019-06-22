@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="login-mapper">
+
+	<select id="login" resultType="client.ClientVO">
+		select * from client
+		where id = #{id} and
+		pw = fn_encrypt( #{pw} )
+	</select>
+
+	<select id="id_check" resultType="Integer">
+		select count(*) from client where id = #{id}
+	</select>
+	
+	<select id="kakaoLogin" resultType="client.ClientVO">
+		select * from client where id = #{email}
+	</select>
+	
+	<select id="kakaoInsert">
+		insert into client(id, pw, name, email, profile)
+		values (#{email}, fn_encrypt(#{pw}), #{name}, #{email}, #{profile_image})
+	</select>
+	
+	<select id="facebookInsert">
+		insert into client(id, pw, name, email)	values (#{id}, fn_encrypt(#{pw}), #{name}, #{id} || '@facebook.com')
+	</select>
+	
+	
+	<update id="profileUpdate">
+		update client set profile = #{profile_image}
+		where id = #{email}
+	</update>
+</mapper>
