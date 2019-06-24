@@ -86,5 +86,10 @@ public class ClientServiceImpl implements ClientService {
 	public String findPw(ClientVO vo) {
 		return dao.findPW(vo);
 	}
+
+	@Override
+	public void newPw(String id, String pw) {
+		dao.newPw(id, pw);
+	}
 	
 }

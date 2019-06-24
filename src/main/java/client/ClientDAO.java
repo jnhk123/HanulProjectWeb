@@ -124,5 +124,13 @@ public class ClientDAO {
 		return sql.selectOne("client-mapper.findPw", vo);
 		}
 	}
+	
+	public void newPw(String id, String pw) {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("id", id);
+		map.put("pw", pw);
+		sql.update("client-mapper.newPw", map);
+		System.out.println(id + " " +pw);
+	}
 
 }

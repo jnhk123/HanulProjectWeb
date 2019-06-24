@@ -234,8 +234,7 @@ input[name=phone], input[name=post] {
 			</tr>
 			<tr>
 				<th>비밀번호 확인<div style="font-size: 15px; color:red; float:left;">*</div></th>
-				<td><input type="password" name="pwd_ck"
-					onkeyup="validate('pwd_ck')" />
+				<td><input type="password" name="pwd_ck" onkeyup="validate('pwd_ck')" />
 					<div style="margin-top: 10px;" id="pwd_ck_status" class="valid">비밀번호를 확인해주세요</div></td>
 			</tr>
 			<tr>

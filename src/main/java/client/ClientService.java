@@ -8,6 +8,9 @@ import status.AddrVO;
 public interface ClientService {
 	
 	//CRUD: 저장 create, 조회 read, 변경 update, 삭제 delete
+	
+	
+		void newPw(String id, String pw);
 		//저장
 		void ainsert(ClientVO vo);
 		void insert(ClientVO vo);

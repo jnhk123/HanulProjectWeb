@@ -23,16 +23,18 @@
 					var str=document.getElementById("fpw");
 					var fstr=document.getElementById("findpw");
 					var fdstr=document.getElementById("find");
-					str.innerHTML ="찾으시는 비밀번호는 '";
-					fstr.innerHTML=data;
-					fdstr.innerHTML="' 입니다.";
-					str.style.color="black";
-					fstr.style.color="green";
-					fdstr.style.color="black";
+// 					str.innerHTML ="찾으시는 비밀번호는 '";
+// 					fstr.innerHTML=data;
+// 					fdstr.innerHTML="' 입니다.";
+// 					str.style.color="black";
+// 					fstr.style.color="green";
+// 					fdstr.style.color="black";
+					$('#send_id').val($('#id').val());
+					$('#change_pw_form').submit();
 				} else {
 					/* alert("입력하신 정보로 비밀번호를 조회할 수 없습니다."); */
 					var str=document.getElementById("findpw");
-					str.innerHTML ="찾으시는 비밀번호가 존재하지 않습니다.";
+					str.innerHTML ="입력하신 정보로 비밀번호를 조회할 수 없습니다.";
 					str.style.color="red";
 					$('#name').val('');
 					$('#email').val('');
@@ -49,6 +51,10 @@
 <title>Insert title here</title>
 </head>
 <body>
+<form action="change.pw" id="change_pw_form" method="post">
+<input type="hidden" id="send_id" name="id">
+</form>
+
 <div style="height: 1000px; width: 100%">
 	<div style="margin-left: 40px; font-size: 30px; font-family: Jua;" >비밀번호 찾기
 	         <div style="padding-left:40px; margin-right: 40px; margin-top:10px;

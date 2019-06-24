@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -18,6 +19,21 @@ public class ClientController {
 	@Autowired
 	private ClientServiceImpl service;
 
+	//비번 변경
+	@RequestMapping(value="/new.pw", method= {RequestMethod.POST})
+	public String newPw(@RequestParam String id, @RequestParam String pw) {
+		service.newPw(id, pw);
+		return "redirect:home";
+	}
+	
+	
+	//비번 변경 화면 연결
+	@RequestMapping(value= "/change.pw", method= {RequestMethod.POST})
+	public String changePW(@RequestParam String id, Model model) {
+		model.addAttribute("id", id);
+		return "client/change_pw";
+	}
+	
 	// 아이디 찾기
 	@ResponseBody @RequestMapping("/findId")
 	public String findId(@RequestParam String name, @RequestParam String email) {
