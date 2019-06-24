@@ -34,7 +34,10 @@ public class ClientDAO {
 	}
 	
 	public ClientVO detail(String id) {
-		return sql.selectOne("client-mapper.detail", id);
+		ClientVO vo = sql.selectOne("client-mapper.detail", id);
+		String addrs = sql.selectOne("client-mapper.addrs", id);
+		vo.setAddrs(addrs);
+		return vo;
 	}
 	
 	public void update(ClientVO vo) {

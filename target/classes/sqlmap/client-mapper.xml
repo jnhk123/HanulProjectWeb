@@ -5,6 +5,10 @@
 	<update id="newPw">
 		update client set pw = fn_encrypt(#{pw}) where id = #{id}
 	</update>
+	
+	<select id="addrs" resultType="String">
+		select addr from client where id = #{id} 
+	</select>
 
 	<select id="findId" parameterType="String" resultType="String">
 		select id from client where name = #{name} and email = #{email}
